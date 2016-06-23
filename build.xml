@@ -1,0 +1,129 @@
+<project name="one-webp" default="build" basedir=".">
+    <property file="${basedir}/local.properties"/>
+
+    <property name="build.dir" value="build"/>
+    <property name="src.dir"   value="src"/>
+
+    <property name="libjpeg-turbo.dir" value="/usr"/>
+    <property name="libpng.dir"        value="/usr"/>
+    <property name="libwebp.dir"       value="/usr"/>
+
+    <property name="build.native.dir" value="${build.dir}/native"/>
+    <property name="src.native.dir"   value="${src.dir}/one/webp/native"/>
+    <property name="gcc.extra.args"   value=""/>
+
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+    </target>
+    
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="build" depends="compile-classes, webp-exe, webp-dll"/>
+
+    <target name="compile-classes" depends="init">
+        <echo message="Compiling classes..."/>
+        <mkdir dir="${build.dir}/classes"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" includeantruntime="false"/>
+    </target>
+
+    <target name="webp-dll">
+        <mkdir dir="${build.native.dir}"/>
+
+        <property name="cl" value="cl.exe"/>
+        <exec osfamily="Windows" executable="${cl}" dir="${build.native.dir}">
+            <arg value="/O2"/>
+            <arg value="/LD"/>
+            <arg value="/I"/>
+            <arg path="${java.home}/../include"/>
+            <arg value="/I"/>
+            <arg path="${java.home}/../include/win32"/>
+            <arg value="/I"/>
+            <arg path="${libjpeg-turbo.dir}/include"/>
+            <arg value="/I"/>
+            <arg path="${libpng.dir}/include"/>
+            <arg value="/I"/>
+            <arg path="${libwebp.dir}/include"/>
+            <arg path="${src.native.dir}/onewebp.c"/>
+            <arg path="${src.native.dir}/jniwrapper.c"/>
+            <arg path="${libjpeg-turbo.dir}/lib/turbojpeg-static.lib"/>
+            <arg path="${libpng.dir}/lib/libpng.lib"/>
+            <arg path="${libpng.dir}/lib/libz.lib"/>
+            <arg path="${libwebp.dir}/lib/libwebp.lib"/>
+        </exec>
+        
+        <property name="gcc" value="gcc"/>
+        <exec os="Linux" executable="${gcc}" dir="${build.native.dir}">
+            <arg value="-O3"/>
+            <arg value="-shared"/>
+            <arg value="-fPIC"/>
+            <arg value="-I"/>
+            <arg path="${java.home}/../include"/>
+            <arg value="-I"/>
+            <arg path="${java.home}/../include/linux"/>
+            <arg value="-I"/>
+            <arg path="${libjpeg-turbo.dir}/include"/>
+            <arg value="-I"/>
+            <arg path="${libpng.dir}/include"/>
+            <arg value="-I"/>
+            <arg path="${libwebp.dir}/include"/>
+            <arg path="${src.native.dir}/onewebp.c"/>
+            <arg path="${src.native.dir}/jniwrapper.c"/>
+            <arg path="${libjpeg-turbo.dir}/lib64/libturbojpeg.a"/>
+            <arg path="${libpng.dir}/lib/libpng.a"/>
+            <arg path="${libwebp.dir}/lib/libwebp.a"/>
+            <arg line="-o libonewebp.so"/>
+            <arg value="-Wl,-soname,libonewebp.so"/>
+        </exec>
+    </target>
+
+    <target name="webp-exe">
+        <mkdir dir="${build.native.dir}"/>
+
+        <property name="cl" value="cl.exe"/>
+        <exec osfamily="Windows" executable="${cl}" dir="${build.native.dir}">
+            <arg value="/O2"/>
+            <arg value="/I"/>
+            <arg path="${java.home}/../include"/>
+            <arg value="/I"/>
+            <arg path="${java.home}/../include/win32"/>
+            <arg value="/I"/>
+            <arg path="${libjpeg-turbo.dir}/include"/>
+            <arg value="/I"/>
+            <arg path="${libpng.dir}/include"/>
+            <arg value="/I"/>
+            <arg path="${libwebp.dir}/include"/>
+            <arg path="${src.native.dir}/onewebp.c"/>
+            <arg path="${src.native.dir}/main.c"/>
+            <arg path="${libjpeg-turbo.dir}/lib/turbojpeg-static.lib"/>
+            <arg path="${libpng.dir}/lib/libpng.lib"/>
+            <arg path="${libpng.dir}/lib/libz.lib"/>
+            <arg path="${libwebp.dir}/lib/libwebp.lib"/>
+        </exec>
+        
+        <property name="gcc" value="gcc"/>
+        <exec os="Linux" executable="${gcc}" dir="${build.native.dir}">
+            <arg value="-O3"/>
+            <arg value="-I"/>
+            <arg path="${java.home}/../include"/>
+            <arg value="-I"/>
+            <arg path="${java.home}/../include/linux"/>
+            <arg value="-I"/>
+            <arg path="${libjpeg-turbo.dir}/include"/>
+            <arg value="-I"/>
+            <arg path="${libpng.dir}/include"/>
+            <arg value="-I"/>
+            <arg path="${libwebp.dir}/include"/>
+            <arg path="${src.native.dir}/onewebp.c"/>
+            <arg path="${src.native.dir}/main.c"/>
+            <arg path="${libjpeg-turbo.dir}/lib64/libturbojpeg.a"/>
+            <arg path="${libpng.dir}/lib/libpng.a"/>
+            <arg path="${libwebp.dir}/lib/libwebp.a"/>
+            <arg value="-lm"/>
+            <arg value="-lz"/>
+            <arg value="-lpthread"/>
+            <arg line="-o onewebp"/>
+        </exec>
+    </target>
+</project>
