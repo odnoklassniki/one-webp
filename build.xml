@@ -73,6 +73,7 @@
             <arg path="${libjpeg-turbo.dir}/lib64/libturbojpeg.a"/>
             <arg path="${libpng.dir}/lib/libpng.a"/>
             <arg path="${libwebp.dir}/lib/libwebp.a"/>
+            <arg value="-lz"/>
             <arg line="-o libonewebp.so"/>
             <arg value="-Wl,-soname,libonewebp.so"/>
         </exec>
