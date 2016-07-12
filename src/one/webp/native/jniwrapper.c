@@ -94,3 +94,14 @@ Java_one_webp_WebP_convert1(JNIEnv* env, jobject cls, jbyteArray srcArray, jlong
         return array;
     }
 }
+
+JNIEXPORT jlong JNICALL
+Java_one_webp_WebP_phash0(JNIEnv* env, jobject cls, jbyteArray srcArray) {
+    jint srcSize = (*env)->GetArrayLength(env, srcArray);
+    jbyte* src = (*env)->GetPrimitiveArrayCritical(env, srcArray, NULL);
+
+    jlong result = image_phash(src, srcSize);
+
+    (*env)->ReleasePrimitiveArrayCritical(env, srcArray, src, JNI_ABORT);
+    return result;
+}

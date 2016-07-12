@@ -16,25 +16,18 @@
 
 package one.webp;
 
-public class WebP {
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-    public static int convert(byte[] src, byte[] dst, Params params) throws WebPException {
-        return convert0(src, dst, params.longValue());
-    }
+public class PHash {
 
-    public static byte[] convert(byte[] src, Params params) throws WebPException {
-        return convert1(src, params.longValue());
-    }
+    public static void main(String[] args) throws Exception {
+        if (args.length == 0) {
+            throw new IllegalArgumentException("Missing input file name");
+        }
 
-    public static long phash(byte[] src) {
-        return phash0(src);
-    }
-
-    private static native int convert0(byte[] src, byte[] dst, long options);
-    private static native byte[] convert1(byte[] src, long options);
-    private static native long phash0(byte[] src);
-
-    static {
-        System.loadLibrary("onewebp");
+        byte[] src = Files.readAllBytes(Paths.get(args[0]));
+        long hash = WebP.phash(src);
+        System.out.println(Long.toHexString(hash));
     }
 }

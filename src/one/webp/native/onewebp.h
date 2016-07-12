@@ -38,10 +38,11 @@ typedef struct {
 } RawImage;
 
 
-int decompress_jpeg(unsigned char* src, unsigned long srcSize, RawImage* rawImage, Params params);
-int decompress_png(unsigned char* src, unsigned long srcSize, RawImage* rawImage, Params params);
+int decompress_image(unsigned char* src, unsigned long srcSize, RawImage* rawImage, Params params);
 int compress_webp(unsigned char* dst, unsigned long dstSize, RawImage* rawImage, Params params);
 
 int convert_to_webp(unsigned char* src, unsigned long srcSize,
                     unsigned char* dst, unsigned long dstSize,
                     Params params);
+
+unsigned long long image_phash(unsigned char* src, unsigned long srcSize);
