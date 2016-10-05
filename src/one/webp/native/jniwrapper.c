@@ -61,7 +61,7 @@ Java_one_webp_WebP_convert0(JNIEnv* env, jobject cls, jbyteArray srcArray, jbyte
     jbyte* dst = (*env)->GetPrimitiveArrayCritical(env, dstArray, NULL);
 
     Params params = paramsFromJava(options);
-    int result = convert_to_webp(src, srcSize, dst, dstSize, params);
+    int result = convert_image(src, srcSize, dst, dstSize, params);
 
     (*env)->ReleasePrimitiveArrayCritical(env, srcArray, src, JNI_ABORT);
     (*env)->ReleasePrimitiveArrayCritical(env, dstArray, dst, JNI_COMMIT);
@@ -79,7 +79,7 @@ Java_one_webp_WebP_convert1(JNIEnv* env, jobject cls, jbyteArray srcArray, jlong
     jbyte dst[MAX_ON_STACK_OUTPUT];
 
     Params params = paramsFromJava(options);
-    int result = convert_to_webp(src, srcSize, dst, sizeof(dst), params);
+    int result = convert_image(src, srcSize, dst, sizeof(dst), params);
 
     (*env)->ReleasePrimitiveArrayCritical(env, srcArray, src, JNI_ABORT);
 

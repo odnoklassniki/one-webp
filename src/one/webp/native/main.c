@@ -51,13 +51,15 @@ static int parse_params(int argc, char** argv, Params* params) {
             params->lossless = 1;
         } else if (strcmp(arg, "-mt") == 0) {
             params->multithreaded = 1;
+        } else if (strcmp(arg, "-png") == 0) {
+            params->png = 1;
         }
     }
     return i;
 }
 
 static void show_usage() {
-    printf("Usage: onewebp [options] <input.jpg|png> <output.webp>\n"
+    printf("Usage: onewebp [options] <input.jpg|png|webp> <output.webp|png>\n"
            "  -q 0..100 : Output quality\n"
            "  -c 1..6   : Compression level\n"
            "  -w px     : Max width\n"
@@ -65,6 +67,7 @@ static void show_usage() {
            "  -j        : Use JPEG scaling\n"
            "  -l        : Lossless compression\n"
            "  -mt       : Multithreaded encoding\n"
+           "  -png      : PNG output\n"
            "\n");
 }
 
@@ -123,7 +126,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int result = convert_to_webp(src, srcSize, dst, sizeof(dst), params);
+    int result = convert_image(src, srcSize, dst, sizeof(dst), params);
     if (result < 0) {
         printf("Error (%d) converting %s\n", result, inFile);
         free(src);

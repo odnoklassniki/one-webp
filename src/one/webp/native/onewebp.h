@@ -29,6 +29,7 @@ typedef struct {
     unsigned int useJpegScaling : 1;
     unsigned int lossless       : 1;
     unsigned int multithreaded  : 1;
+    unsigned int png            : 1;
 } Params;
 
 typedef struct {
@@ -40,9 +41,10 @@ typedef struct {
 
 int decompress_image(unsigned char* src, unsigned long srcSize, RawImage* rawImage, Params params);
 int compress_webp(unsigned char* dst, unsigned long dstSize, RawImage* rawImage, Params params);
+int compress_png(unsigned char* dst, unsigned long dstSize, RawImage* rawImage);
 
-int convert_to_webp(unsigned char* src, unsigned long srcSize,
-                    unsigned char* dst, unsigned long dstSize,
-                    Params params);
+int convert_image(unsigned char* src, unsigned long srcSize,
+                  unsigned char* dst, unsigned long dstSize,
+                  Params params);
 
 unsigned long long image_phash(unsigned char* src, unsigned long srcSize);

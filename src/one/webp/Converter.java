@@ -49,6 +49,9 @@ public class Converter {
                 case "-mt":
                     params.multithreaded(true);
                     break;
+                case "-png":
+                    params.png(true);
+                    break;
             }
         }
         return i;
@@ -58,7 +61,7 @@ public class Converter {
         Params params = new Params();
         int paramCount = parseParams(args, params);
         if (paramCount + 2 != args.length) {
-            throw new IllegalArgumentException("[options] <input.jpg|png> <output.webp>");
+            throw new IllegalArgumentException("[options] <input.jpg|png|webp> <output.webp|png>");
         }
 
         String inFile = args[paramCount];

@@ -110,12 +110,47 @@ static int decompress_png(unsigned char* src, unsigned long srcSize, RawImage* r
     return 0;
 }
 
+static int decompress_webp(unsigned char* src, unsigned long srcSize, RawImage* rawImage, Params params) {
+    int width, height;
+    if (!WebPGetInfo(src, srcSize, &width, &height)) {
+        return ERR_FORMAT;
+    }
+
+    rawImage->width = width;
+    rawImage->height = height;
+    rawImage->argb = (unsigned char*)malloc(width * height * 4);
+
+    if (!WebPDecodeBGRAInto(src, srcSize, rawImage->argb, width * height * 4, width * 4)) {
+        free(rawImage->argb);
+        return ERR_DECOMPRESS;
+    }
+
+    return 0;
+}
+
 int decompress_image(unsigned char* src, unsigned long srcSize, RawImage* rawImage, Params params) {
     if (srcSize >= 4 && src[1] == 'P' && src[2] == 'N' && src[3] == 'G') {
         return decompress_png(src, srcSize, rawImage, params);
-    } else {
+    } else if (srcSize >= 3 && src[0] == 0xff && src[1] == 0xd8 && src[2] == 0xff) {
         return decompress_jpeg(src, srcSize, rawImage, params);
+    } else {
+        return decompress_webp(src, srcSize, rawImage, params);
     }
+}
+
+int compress_png(unsigned char* dst, unsigned long dstSize, RawImage* rawImage) {
+    png_image png = { NULL };
+    png.version = PNG_IMAGE_VERSION;
+    png.width = rawImage->width;
+    png.height = rawImage->height;
+    png.format = PNG_FORMAT_BGRA;
+
+    png_alloc_size_t size = (png_alloc_size_t)dstSize;
+    if (!png_image_write_to_memory(&png, dst, &size, 0, rawImage->argb, 0, NULL)) {
+        return ERR_COMPRESS;
+    }
+
+    return (int)size;
 }
 
 int compress_webp(unsigned char* dst, unsigned long dstSize, RawImage* rawImage, Params params) {
@@ -162,17 +197,23 @@ int compress_webp(unsigned char* dst, unsigned long dstSize, RawImage* rawImage,
     return (int)(buffer.ptr - dst);
 }
 
-int convert_to_webp(unsigned char* src, unsigned long srcSize,
-                    unsigned char* dst, unsigned long dstSize,
-                    Params params) {
+int convert_image(unsigned char* src, unsigned long srcSize,
+                  unsigned char* dst, unsigned long dstSize,
+                  Params params) {
     RawImage rawImage;
-    int result = decompress_image(src, srcSize, &rawImage, params);
 
-    if (result == 0) {
-        result = compress_webp(dst, dstSize, &rawImage, params);
-        free(rawImage.argb);
+    int result = decompress_image(src, srcSize, &rawImage, params);
+    if (result) {
+        return result;
     }
 
+    if (params.png) {
+        result = compress_png(dst, dstSize, &rawImage);
+    } else {
+        result = compress_webp(dst, dstSize, &rawImage, params);
+    }
+
+    free(rawImage.argb);
     return result;
 }
 
