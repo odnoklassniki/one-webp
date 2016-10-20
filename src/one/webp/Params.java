@@ -70,6 +70,38 @@ public class Params {
         return this;
     }
 
+    public int quality() {
+        return quality;
+    }
+
+    public int compression() {
+        return compression;
+    }
+
+    public int maxWidth() {
+        return maxWidth;
+    }
+
+    public int maxHeight() {
+        return maxHeight;
+    }
+
+    public boolean useJpegScaling() {
+        return useJpegScaling;
+    }
+
+    public boolean lossless() {
+        return lossless;
+    }
+
+    public boolean multithreaded() {
+        return multithreaded;
+    }
+
+    public boolean png() {
+        return png;
+    }
+
     // See struct Params in onewebp.h
     long longValue() {
         return (long) maxWidth
