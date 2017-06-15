@@ -68,6 +68,7 @@
             <arg path="${libpng.dir}/include"/>
             <arg value="-I"/>
             <arg path="${libwebp.dir}/include"/>
+            <arg line="${gcc.extra.args}"/>
             <arg path="${src.native.dir}/onewebp.c"/>
             <arg path="${src.native.dir}/jniwrapper.c"/>
             <arg path="${libjpeg-turbo.dir}/lib64/libturbojpeg.a"/>
@@ -121,6 +122,7 @@
             <arg path="${libjpeg-turbo.dir}/lib64/libturbojpeg.a"/>
             <arg path="${libpng.dir}/lib/libpng.a"/>
             <arg path="${libwebp.dir}/lib/libwebp.a"/>
+            <arg line="${gcc.extra.args}"/>
             <arg value="-lm"/>
             <arg value="-lz"/>
             <arg value="-lpthread"/>

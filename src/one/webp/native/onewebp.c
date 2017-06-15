@@ -57,6 +57,21 @@ static int webp_writer(const uint8_t* data, size_t dataSize, const WebPPicture* 
     return 1;
 }
 
+// This is not a proper conversion, but rather a quick approximation to generate low-quality previews
+static void cmyk_to_argb(unsigned char* src, unsigned long srcSize) {
+    unsigned char* end = src + srcSize;
+    for (; src < end; src += 4) {
+        unsigned int k = src[3];
+        unsigned char r = src[0] * k / 255;
+        unsigned char g = src[1] * k / 255;
+        unsigned char b = src[2] * k / 255;
+        src[0] = b;
+        src[1] = g;
+        src[2] = r;
+        src[3] = 255;
+    }
+}
+
 
 static int decompress_jpeg(unsigned char* src, unsigned long srcSize, RawImage* rawImage, Params params) {
     tjhandle handle = tjInitDecompress();
@@ -79,10 +94,16 @@ static int decompress_jpeg(unsigned char* src, unsigned long srcSize, RawImage* 
     rawImage->height = height;
     rawImage->argb = (unsigned char*)malloc(width * height * 4);
 
-    if (tjDecompress2(handle, src, srcSize, rawImage->argb, width, 0, height, TJPF_BGRX, 0)) {
+    int pixelFormat = (colorspace == TJCS_CMYK || colorspace == TJCS_YCCK) ? TJPF_CMYK : TJPF_BGRX;
+    int err = tjDecompress2(handle, src, srcSize, rawImage->argb, width, 0, height, pixelFormat, 0);
+    if (err) {
         free(rawImage->argb);
         tjDestroy(handle);
         return ERR_DECOMPRESS;
+    }
+
+    if (pixelFormat == TJPF_CMYK) {
+        cmyk_to_argb(rawImage->argb, width * height * 4);
     }
 
     tjDestroy(handle);
