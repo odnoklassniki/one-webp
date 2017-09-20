@@ -25,6 +25,7 @@ public class Params {
     private boolean lossless;
     private boolean multithreaded;
     private boolean png;
+    private boolean jpeg;
 
     public Params quality(int quality) {
         check(quality >= 0 && quality <= 100);
@@ -70,6 +71,11 @@ public class Params {
         return this;
     }
 
+    public Params jpeg(boolean jpeg) {
+        this.jpeg = jpeg;
+        return this;
+    }
+
     public int quality() {
         return quality;
     }
@@ -102,6 +108,10 @@ public class Params {
         return png;
     }
 
+    public boolean jpeg() {
+        return jpeg;
+    }
+
     // See struct Params in onewebp.h
     long longValue() {
         return (long) maxWidth
@@ -111,7 +121,8 @@ public class Params {
                 | (useJpegScaling ? 1L << 48 : 0)
                 | (lossless ? 1L << 49 : 0)
                 | (multithreaded ? 1L << 50 : 0)
-                | (png ? 1L << 51 : 0);
+                | (png ? 1L << 51 : 0)
+                | (jpeg ? 1L << 52 : 0);
     }
 
     private void check(boolean condition) {

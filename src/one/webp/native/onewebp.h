@@ -30,6 +30,7 @@ typedef struct {
     unsigned int lossless       : 1;
     unsigned int multithreaded  : 1;
     unsigned int png            : 1;
+    unsigned int jpeg           : 1;
 } Params;
 
 typedef struct {

@@ -159,6 +159,20 @@ int decompress_image(unsigned char* src, unsigned long srcSize, RawImage* rawIma
     }
 }
 
+int compress_jpeg(unsigned char* dst, unsigned long dstSize, RawImage* rawImage, Params params) {
+    tjhandle handle = tjInitCompress();
+
+    int err = tjCompress2(handle, rawImage->argb, rawImage->width, 0, rawImage->height, TJPF_BGRX,
+                          &dst, &dstSize, TJSAMP_420, params.quality, TJFLAG_NOREALLOC);
+    if (err) {
+        tjDestroy(handle);
+        return ERR_COMPRESS;
+    }
+
+    tjDestroy(handle);
+    return (int)dstSize;
+}
+
 int compress_png(unsigned char* dst, unsigned long dstSize, RawImage* rawImage) {
     png_image png = { NULL };
     png.version = PNG_IMAGE_VERSION;
@@ -230,6 +244,8 @@ int convert_image(unsigned char* src, unsigned long srcSize,
 
     if (params.png) {
         result = compress_png(dst, dstSize, &rawImage);
+    } else if (params.jpeg) {
+        result = compress_jpeg(dst, dstSize, &rawImage, params);
     } else {
         result = compress_webp(dst, dstSize, &rawImage, params);
     }

@@ -52,6 +52,9 @@ public class Converter {
                 case "-png":
                     params.png(true);
                     break;
+                case "-jpeg":
+                    params.jpeg(true);
+                    break;
             }
         }
         return i;
