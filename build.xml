@@ -8,6 +8,10 @@
     <property name="libpng.dir"        value="/usr"/>
     <property name="libwebp.dir"       value="/usr"/>
 
+    <property name="jpeg-turbo.version" value="2.0.0"/>
+    <property name="libpng.version" value="1.6.35"/>
+    <property name="libwebp.version" value="1.0.0"/>
+
     <property name="build.native.dir" value="${build.dir}/native"/>
     <property name="src.native.dir"   value="${src.dir}/one/webp/native"/>
     <property name="gcc.extra.args"   value=""/>
@@ -52,7 +56,7 @@
             <arg path="${libpng.dir}/lib/libz.lib"/>
             <arg path="${libwebp.dir}/lib/libwebp.lib"/>
         </exec>
-        
+
         <property name="gcc" value="gcc"/>
         <exec os="Linux" executable="${gcc}" dir="${build.native.dir}">
             <arg value="-O3"/>
@@ -77,6 +81,35 @@
             <arg value="-lz"/>
             <arg line="-o libonewebp.so"/>
             <arg value="-Wl,-soname,libonewebp.so"/>
+        </exec>
+        
+        <property name="gcc" value="gcc"/>
+        <exec os="Mac OS X" executable="${gcc}" dir="${build.native.dir}">
+            <arg value="-DBUILD_JAVA=OFF"/>
+            <arg value="-O3"/>
+            <arg value="-shared"/>
+            <arg value="-fPIC"/>
+            <arg value="-I"/>
+            <arg path="${java.home}/../include"/>
+            <arg value="-I"/>
+            <arg path="${java.home}/../include/darwin"/>
+            <arg value="-I"/>
+            <arg path="${libjpeg-turbo.dir}/local/Cellar/jpeg-turbo/${jpeg-turbo.version}/include"/>
+            <arg value="-I"/>
+            <arg path="/usr/local/Cellar/libpng/${libpng.version}/include"/>
+            <arg value="-I"/>
+            <arg path="/usr/local/Cellar/webp/${libwebp.version}/include"/>
+            <arg line="${gcc.extra.args}"/>
+            <arg path="${src.native.dir}/onewebp.c"/>
+            <arg path="${src.native.dir}/jniwrapper.c"/>
+
+            <arg path="${libjpeg-turbo.dir}/local/Cellar/jpeg-turbo/${jpeg-turbo.version}/lib/libturbojpeg.a"/>
+            <arg path="${libpng.dir}/local/Cellar/libpng/${libpng.version}/lib/libpng.a"/>
+            <arg path="${libwebp.dir}/local/Cellar/webp/${libwebp.version}/lib/libwebp.a"/>
+
+            <arg value="-lz"/>
+            <arg line="-v -o libonewebp.dylib"/>
+            <arg value="-Wl,-install_name,libonewebp.dylib"/>
         </exec>
     </target>
 
